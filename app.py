@@ -499,7 +499,8 @@ def student_id_card():
                            college=COLLEGE_NAME, address=COLLEGE_ADDRESS)
 
 
+with app.app_context():
+    db.create_all()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
