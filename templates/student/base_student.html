@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{% block title %}Student Portal{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" style="background:linear-gradient(180deg,#0f172a,#1e3a5f)">
+    <div class="sidebar-brand">
+      <span class="brand-icon">👨‍🎓</span>
+      <span class="brand-name">Student Portal</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('student_dashboard') }}" class="nav-link {% if request.endpoint=='student_dashboard' %}active{% endif %}">
+        <span class="nav-icon">🏠</span> My Profile
+      </a>
+      <a href="{{ url_for('student_update') }}" class="nav-link {% if request.endpoint=='student_update' %}active{% endif %}">
+        <span class="nav-icon">✏️</span> Update Details
+      </a>
+      <a href="{{ url_for('student_id_card') }}" class="nav-link {% if request.endpoint=='student_id_card' %}active{% endif %}">
+        <span class="nav-icon">🪪</span> My ID Card
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">{{ student.name[0].upper() }}</div>
+        <div>
+          <div class="user-name">{{ student.name }}</div>
+          <a href="{{ url_for('student_logout') }}" class="logout-link">Logout</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="flash-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for cat, msg in messages %}
+          <div class="flash flash-{{ 'danger' if cat=='error' else cat }}">
+            {{ msg }}<button class="flash-close" onclick="this.parentElement.remove()">×</button>
+          </div>
+        {% endfor %}{% endif %}
+      {% endwith %}
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

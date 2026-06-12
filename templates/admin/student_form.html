@@ -1,0 +1,119 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ "Edit" if edit else "Add" }} Student — Admin{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">{{ "Edit Student" if edit else "Add New Student" }}</h1>
+  <a href="{{ url_for('admin_students') }}" class="btn btn-outline">← Back</a>
+</div>
+
+<div class="form-card" style="max-width:760px">
+  <form method="POST" data-validate>
+
+    <div class="form-grid-2">
+      <div class="form-section">Personal Info</div>
+
+      <div class="form-group">
+        <label class="form-label">Full Name <span class="req">*</span></label>
+        <input type="text" name="name" class="form-input" required
+               placeholder="e.g. Ditipriya Sarkar"
+               value="{{ form.get('name','') }}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Roll Number <span class="req">*</span></label>
+        <input type="text" name="roll_number" class="form-input" required
+               placeholder="e.g. CSE2301"
+               value="{{ form.get('roll_number','') }}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email <span class="req">*</span></label>
+        <input type="email" name="email" class="form-input" required
+               placeholder="student@example.com"
+               value="{{ form.get('email','') }}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone <span class="req">*</span></label>
+        <input type="tel" name="phone" class="form-input" maxlength="10" required
+               placeholder="10-digit number"
+               value="{{ form.get('phone','') }}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Age</label>
+        <input type="number" name="age" class="form-input" min="15" max="50"
+               placeholder="e.g. 20"
+               value="{{ form.get('age','') }}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Blood Group</label>
+        <select name="blood_group" class="form-input">
+          <option value="">— Select —</option>
+          {% for bg in blood_groups %}
+            <option value="{{ bg }}" {{ 'selected' if form.get('blood_group')==bg }}>{{ bg }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-section">Academic Info</div>
+
+      <div class="form-group">
+        <label class="form-label">Branch <span class="req">*</span></label>
+        <select name="branch" class="form-input" required>
+          <option value="">— Select Branch —</option>
+          {% for b in branches %}
+            <option value="{{ b }}" {{ 'selected' if form.get('branch')==b }}>{{ b }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Year <span class="req">*</span></label>
+        <select name="year" class="form-input" required>
+          <option value="">— Select Year —</option>
+          {% for y in [1,2,3,4] %}
+            <option value="{{ y }}" {{ 'selected' if form.get('year')|string==y|string }}>Year {{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-section">Guardian Info</div>
+
+      <div class="form-group">
+        <label class="form-label">Guardian Name</label>
+        <input type="text" name="guardian_name" class="form-input"
+               placeholder="Parent / Guardian"
+               value="{{ form.get('guardian_name','') }}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Guardian Phone</label>
+        <input type="tel" name="guardian_phone" class="form-input" maxlength="10"
+               placeholder="10-digit number"
+               value="{{ form.get('guardian_phone','') }}"/>
+      </div>
+
+      <div class="form-section">Address &amp; Password</div>
+
+      <div class="form-group full">
+        <label class="form-label">Address</label>
+        <textarea name="address" class="form-input" rows="2"
+                  placeholder="Full address...">{{ form.get('address','') }}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">
+          {{ "New Password" if edit else "Password" }}
+          {% if not edit %}<span class="req">*</span>{% endif %}
+          {% if edit %}<span class="hint">(leave blank to keep current)</span>{% endif %}
+        </label>
+        <input type="password" name="password" class="form-input"
+               placeholder="Min 6 characters"
+               {% if not edit %}required{% endif %}/>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button type="submit" class="btn btn-primary">
+        {{ "Save Changes" if edit else "Add Student" }}
+      </button>
+      <a href="{{ url_for('admin_students') }}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

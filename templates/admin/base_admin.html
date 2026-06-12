@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>{% block title %}Admin — DS Portal{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🛡️</span>
+      <span class="brand-name">Admin Panel</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint=='admin_dashboard' %}active{% endif %}">
+        <span class="nav-icon">⊞</span> Dashboard
+      </a>
+      <a href="{{ url_for('admin_students') }}" class="nav-link {% if 'student' in request.endpoint %}active{% endif %}">
+        <span class="nav-icon">👥</span> Students
+      </a>
+      <a href="{{ url_for('admin_add_student') }}" class="nav-link {% if request.endpoint=='admin_add_student' %}active{% endif %}">
+        <span class="nav-icon">➕</span> Add Student
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">{{ admin.name[0].upper() if admin else 'A' }}</div>
+        <div>
+          <div class="user-name">{{ admin.name if admin else 'Admin' }}</div>
+          <a href="{{ url_for('admin_logout') }}" class="logout-link">Logout</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="flash-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for cat, msg in messages %}
+          <div class="flash flash-{{ 'danger' if cat=='error' else cat }}">
+            {{ msg }}<button class="flash-close" onclick="this.parentElement.remove()">×</button>
+          </div>
+        {% endfor %}{% endif %}
+      {% endwith %}
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

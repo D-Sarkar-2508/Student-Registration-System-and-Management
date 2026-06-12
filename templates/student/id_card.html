@@ -1,0 +1,91 @@
+{% extends "student/base_student.html" %}
+{% block title %}My ID Card — DS Portal{% endblock %}
+{% block content %}
+
+<div class="page-header no-print">
+  <div>
+    <h1 class="page-title">My ID Card</h1>
+    <p class="page-sub">Your digital college identity card</p>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button onclick="window.print()" class="btn btn-primary no-print">🖨 Print / Save PDF</button>
+    <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline no-print">← Back</a>
+  </div>
+</div>
+
+<div class="id-card-page">
+  <div class="id-card">
+
+    <!-- Header -->
+    <div class="id-card-header">
+      <div style="font-size:2rem;margin-bottom:6px">🎓</div>
+      <div class="id-card-college">{{ college }}</div>
+      <div class="id-card-addr">{{ address }}</div>
+      <div class="id-card-tag">STUDENT IDENTITY CARD</div>
+    </div>
+
+    <!-- Body -->
+    <div class="id-card-body">
+      <div class="id-card-avatar">{{ student.name[0].upper() }}</div>
+      <div class="id-card-name">{{ student.name }}</div>
+      <div class="id-card-roll">Roll No: {{ student.roll_number }}</div>
+
+      <div class="id-card-fields">
+        <div class="id-field">
+          <span class="id-field-label">Department</span>
+          <span class="id-field-value">{{ student.branch }}</span>
+        </div>
+        <div class="id-field">
+          <span class="id-field-label">Year of Study</span>
+          <span class="id-field-value">
+            {{ student.year }}{% if student.year==1 %}st{% elif student.year==2 %}nd{% elif student.year==3 %}rd{% else %}th{% endif %} Year
+          </span>
+        </div>
+        <div class="id-field">
+          <span class="id-field-label">Mobile No.</span>
+          <span class="id-field-value">{{ student.phone }}</span>
+        </div>
+        {% if student.blood_group %}
+        <div class="id-field">
+          <span class="id-field-label">Blood Group</span>
+          <span class="id-field-value" style="color:var(--red);font-weight:700">{{ student.blood_group }}</span>
+        </div>
+        {% endif %}
+        {% if student.guardian_name %}
+        <div class="id-field">
+          <span class="id-field-label">Guardian</span>
+          <span class="id-field-value">{{ student.guardian_name }}</span>
+        </div>
+        {% endif %}
+        <div class="id-field">
+          <span class="id-field-label">Issue Date</span>
+          <span class="id-field-value">{{ student.registered_on.strftime('%d %b %Y') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="id-card-footer">
+      If found, please return to: {{ address }}<br/>
+      This card is non-transferable. Valid for the current academic year only.
+    </div>
+  </div>
+
+  <p class="no-print" style="margin-top:14px;font-size:.82rem;color:var(--muted);text-align:center">
+    Click "Print / Save PDF" to download or print your ID card.
+  </p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+@media print {
+  .sidebar, .no-print { display: none !important; }
+  .main { padding: 0 !important; }
+  .layout { display: block; }
+  .id-card { box-shadow: none; border: 2px solid #4f46e5; }
+  body { background: white; }
+}
+</style>
+{% endblock %}

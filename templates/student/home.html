@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Student Portal — DS College</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+<div class="student-home-wrap">
+  <div class="student-home-card">
+    <div class="landing-logo">👨‍🎓</div>
+    <h1 class="landing-title">Student Portal</h1>
+    <p class="landing-subtitle" style="margin-bottom:32px">{{ college }}</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for cat, msg in messages %}
+        <div class="flash flash-{{ 'danger' if cat=='error' else cat }}" style="margin-bottom:12px;text-align:left">
+          {{ msg }}<button class="flash-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    <div class="portal-btns">
+      <a href="{{ url_for('student_register') }}" class="portal-btn">
+        <span class="portal-btn-icon">📝</span>
+        <div class="portal-btn-text">
+          <div class="portal-btn-label">New Student? Register</div>
+          <div class="portal-btn-desc">Create your student account</div>
+        </div>
+        <span style="margin-left:auto;color:#94a3b8">→</span>
+      </a>
+      <a href="{{ url_for('student_login') }}" class="portal-btn">
+        <span class="portal-btn-icon">🔑</span>
+        <div class="portal-btn-text">
+          <div class="portal-btn-label">Already Registered? Login</div>
+          <div class="portal-btn-desc">Access your profile &amp; ID card</div>
+        </div>
+        <span style="margin-left:auto;color:#94a3b8">→</span>
+      </a>
+    </div>
+
+    <a href="{{ url_for('landing') }}" class="auth-back" style="margin-top:22px">← Back to home</a>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

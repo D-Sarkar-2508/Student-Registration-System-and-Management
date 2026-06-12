@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin Signup — DS Portal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+<div class="auth-outer">
+  <div class="auth-card" style="max-width:460px">
+    <div class="auth-logo">🛡️</div>
+    <h1 class="auth-title">Create Admin Account</h1>
+    <p class="auth-sub">DS College of Engineering &amp; Technology</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for cat, msg in messages %}
+        <div class="flash flash-{{ 'danger' if cat=='error' else cat }}" style="margin-bottom:12px">
+          {{ msg }}<button class="flash-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('admin_signup') }}" id="signupForm">
+
+      <div class="form-group" style="margin-bottom:13px">
+        <label class="form-label">Full Name <span class="req">*</span></label>
+        <input type="text" name="name" class="form-input"
+               placeholder="e.g. Ditipriya Sarkar"
+               value="{{ form.get('name','') }}" required/>
+      </div>
+
+      <div class="form-group" style="margin-bottom:13px">
+        <label class="form-label">Username <span class="req">*</span></label>
+        <input type="text" name="username" class="form-input"
+               placeholder="e.g. admin2025"
+               value="{{ form.get('username','') }}" required/>
+        <small class="hint" style="margin-top:3px;display:block">Used to log in. Min 3 characters, no spaces.</small>
+      </div>
+
+      <div class="form-group" style="margin-bottom:13px">
+        <label class="form-label">Email Address <span class="req">*</span></label>
+        <input type="email" name="email" class="form-input"
+               placeholder="admin@example.com"
+               value="{{ form.get('email','') }}" required/>
+      </div>
+
+      <div class="form-group" style="margin-bottom:13px">
+        <label class="form-label">Password <span class="req">*</span></label>
+        <input type="password" name="password" id="pw" class="form-input"
+               placeholder="Min 6 characters" required/>
+      </div>
+
+      <div class="form-group" style="margin-bottom:20px">
+        <label class="form-label">Confirm Password <span class="req">*</span></label>
+        <input type="password" name="confirm" id="cpw" class="form-input"
+               placeholder="Repeat password" required/>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="{{ url_for('admin_login') }}">Sign In</a></p>
+    <a href="{{ url_for('landing') }}" class="auth-back">← Back to home</a>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  // Live password match indicator
+  document.getElementById('cpw').addEventListener('input', function() {
+    const pw  = document.getElementById('pw').value;
+    const cpw = this.value;
+    if (cpw.length === 0) { this.classList.remove('is-valid','is-invalid'); return; }
+    this.classList.toggle('is-valid',   pw === cpw);
+    this.classList.toggle('is-invalid', pw !== cpw);
+  });
+</script>
+</body>
+</html>

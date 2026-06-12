@@ -1,0 +1,99 @@
+{% extends "student/base_student.html" %}
+{% block title %}My Profile — DS Portal{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">My Profile</h1>
+    <p class="page-sub">Welcome, {{ student.name }}!</p>
+  </div>
+  <a href="{{ url_for('student_update') }}" class="btn btn-primary">✏ Update Details</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px">
+
+  <!-- Profile card -->
+  <div class="card" style="grid-column:1/-1">
+    <div class="card-body">
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px">
+        <div class="avatar-lg" style="width:72px;height:72px;font-size:1.8rem">{{ student.name[0].upper() }}</div>
+        <div>
+          <div style="font-size:1.25rem;font-weight:800">{{ student.name }}</div>
+          <div style="color:var(--muted);font-size:.85rem">{{ student.email }}</div>
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+            <span class="badge badge-primary">{{ student.roll_number }}</span>
+            <span class="badge badge-muted">{{ student.branch }}</span>
+            <span class="badge badge-muted">Year {{ student.year }}</span>
+            {% if student.blood_group %}
+            <span class="badge badge-red">{{ student.blood_group }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <hr class="divider"/>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Phone Number</div>
+          <div class="info-value">{{ student.phone }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Age</div>
+          <div class="info-value">{{ student.age or '—' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Department</div>
+          <div class="info-value">{{ student.branch }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Year of Study</div>
+          <div class="info-value">{{ student.year }}{% if student.year==1 %}st{% elif student.year==2 %}nd{% elif student.year==3 %}rd{% else %}th{% endif %} Year</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Guardian Name</div>
+          <div class="info-value">{{ student.guardian_name or '—' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Guardian Phone</div>
+          <div class="info-value">{{ student.guardian_phone or '—' }}</div>
+        </div>
+        <div class="info-item" style="grid-column:1/-1">
+          <div class="info-label">Address</div>
+          <div class="info-value">{{ student.address or '—' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Registered On</div>
+          <div class="info-value">{{ student.registered_on.strftime('%d %B %Y') }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="card">
+    <div class="card-body">
+      <div class="section-title">Quick Actions</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <a href="{{ url_for('student_update') }}" class="btn btn-outline" style="justify-content:flex-start">✏️ &nbsp;Update My Details</a>
+        <a href="{{ url_for('student_id_card') }}"  class="btn btn-outline" style="justify-content:flex-start">🪪 &nbsp;View My ID Card</a>
+        <a href="{{ url_for('student_logout') }}"   class="btn btn-outline" style="justify-content:flex-start;color:var(--red)">🚪 &nbsp;Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- College info -->
+  <div class="card">
+    <div class="card-body">
+      <div class="section-title">College Info</div>
+      <div class="info-item" style="margin-bottom:12px">
+        <div class="info-label">Institution</div>
+        <div class="info-value" style="font-size:.88rem">{{ college }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Location</div>
+        <div class="info-value" style="font-size:.88rem">{{ address }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

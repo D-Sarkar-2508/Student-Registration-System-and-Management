@@ -1,0 +1,69 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ student.name }} — Admin{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Student Details</h1>
+  <div style="display:flex;gap:8px">
+    <a href="{{ url_for('admin_edit_student', sid=student.id) }}" class="btn btn-primary">✏ Edit</a>
+    <a href="{{ url_for('admin_students') }}" class="btn btn-outline">← Back</a>
+  </div>
+</div>
+
+<div class="card" style="max-width:780px">
+  <div class="card-body">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div class="avatar-lg">{{ student.name[0].upper() }}</div>
+      <div>
+        <div style="font-size:1.2rem;font-weight:800">{{ student.name }}</div>
+        <div style="color:var(--muted);font-size:.85rem">{{ student.email }}</div>
+        <div style="margin-top:4px">
+          <span class="badge badge-primary">{{ student.roll_number }}</span>
+          <span class="badge badge-muted" style="margin-left:4px">{{ student.branch }} · Year {{ student.year }}</span>
+          {% if student.blood_group %}
+          <span class="badge badge-red" style="margin-left:4px">{{ student.blood_group }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Phone</div>
+        <div class="info-value">{{ student.phone }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Age</div>
+        <div class="info-value">{{ student.age or '—' }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Guardian Name</div>
+        <div class="info-value">{{ student.guardian_name or '—' }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Guardian Phone</div>
+        <div class="info-value">{{ student.guardian_phone or '—' }}</div>
+      </div>
+      <div class="info-item" style="grid-column:1/-1">
+        <div class="info-label">Address</div>
+        <div class="info-value">{{ student.address or '—' }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Registered On</div>
+        <div class="info-value">{{ student.registered_on.strftime('%d %B %Y, %I:%M %p') }}</div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+    <div style="display:flex;gap:10px">
+      <a href="{{ url_for('admin_edit_student', sid=student.id) }}" class="btn btn-primary">✏ Edit Details</a>
+      <form id="del-{{ student.id }}" method="POST"
+            action="{{ url_for('admin_delete_student', sid=student.id) }}"></form>
+      <button type="button" class="btn btn-danger"
+              onclick="confirmDelete('del-{{ student.id }}','{{ student.name }}')">🗑 Delete</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin Login — DS Portal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <style>
+    .ac-wrap { position: relative; }
+    .ac-dropdown {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 999;
+      background: #fff; border: 1.5px solid var(--primary);
+      border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.13);
+      max-height: 220px; overflow-y: auto; display: none;
+    }
+    .ac-dropdown.open { display: block; }
+    .ac-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; cursor: pointer; transition: background .1s;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover, .ac-item.active { background: var(--primary-l, #e0e7ff); }
+    .ac-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--primary, #4f46e5); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700; flex-shrink: 0;
+    }
+    .ac-username { font-size: .88rem; font-weight: 500; color: #1e293b; }
+    .ac-name     { font-size: .75rem; color: #64748b; }
+    .ac-arrow {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: #64748b; font-size: .8rem; padding: 4px;
+    }
+    .ac-arrow:hover { color: var(--primary, #4f46e5); }
+  </style>
+</head>
+<body>
+<div class="auth-outer">
+  <div class="auth-card">
+    <div class="auth-logo">🛡️</div>
+    <h1 class="auth-title">Admin Login</h1>
+    <p class="auth-sub">DS College of Engineering &amp; Technology</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for cat, msg in messages %}
+        <div class="flash flash-{{ 'danger' if cat=='error' else cat }}" style="margin-bottom:14px">
+          {{ msg }}<button class="flash-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    <form method="POST" id="adminLoginForm">
+
+      <!-- Username with dropdown -->
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Username</label>
+        <div class="ac-wrap">
+          <input type="text" name="username" id="usernameInput" class="form-input"
+                 placeholder="your username" required autocomplete="off"
+                 style="padding-right:36px"/>
+          <button type="button" class="ac-arrow" id="usernameArrow" title="Show all admins">▼</button>
+          <div class="ac-dropdown" id="usernameDropdown"></div>
+        </div>
+      </div>
+
+      <!-- Password with show/hide -->
+      <div class="form-group" style="margin-bottom:6px">
+        <label class="form-label">Password</label>
+        <div style="position:relative">
+          <input type="password" name="password" id="password" class="form-input"
+                 placeholder="••••••••" required autocomplete="off"
+                 style="padding-right:44px"/>
+          <button type="button" onclick="togglePw()"
+                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                         background:none;border:none;cursor:pointer;color:#64748b;font-size:1rem"
+                  id="eyeBtn">👁</button>
+        </div>
+      </div>
+
+      <!-- Remember me -->
+      <div style="display:flex;align-items:center;gap:8px;margin:12px 0 20px">
+        <input type="checkbox" id="rememberMe" style="width:16px;height:16px;accent-color:#4f46e5;cursor:pointer"/>
+        <label for="rememberMe" style="font-size:.83rem;color:#64748b;cursor:pointer;user-select:none">
+          Remember my username
+        </label>
+        <span id="savedBadge" style="display:none;margin-left:auto;font-size:.75rem;
+              background:var(--primary-l);color:var(--primary-d);padding:2px 8px;border-radius:20px">✓ Saved</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+    </form>
+
+    <p class="auth-switch">New admin? <a href="{{ url_for('admin_signup') }}">Create an account</a></p>
+    <a href="{{ url_for('landing') }}" class="auth-back">← Back to home</a>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'ds_admin_saved';
+let allAdmins = [];
+let activeIdx = -1;
+
+function togglePw() {
+  const inp = document.getElementById('password');
+  const btn = document.getElementById('eyeBtn');
+  inp.type  = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function buildDropdown(items) {
+  const dd = document.getElementById('usernameDropdown');
+  dd.innerHTML = '';
+  activeIdx = -1;
+  if (!items.length) { dd.classList.remove('open'); return; }
+  items.forEach((adm) => {
+    const div = document.createElement('div');
+    div.className = 'ac-item';
+    div.dataset.username = adm.username;
+    div.innerHTML = `
+      <div class="ac-avatar">${adm.name[0].toUpperCase()}</div>
+      <div>
+        <div class="ac-username">${adm.username}</div>
+        <div class="ac-name">${adm.name}</div>
+      </div>`;
+    div.addEventListener('mousedown', e => {
+      e.preventDefault();
+      selectAdmin(adm.username);
+    });
+    dd.appendChild(div);
+  });
+  dd.classList.add('open');
+}
+
+function selectAdmin(username) {
+  const usernameInput = document.getElementById('usernameInput');
+  const passwordInp   = document.getElementById('password');
+  usernameInput.value = username;
+  usernameInput.style.borderColor = '#16a34a';
+  document.getElementById('usernameDropdown').classList.remove('open');
+
+  // Auto-fill saved password for this username if exists
+  const map = JSON.parse(localStorage.getItem(STORAGE_KEY + '_map') || '{}');
+  if (map[username]) {
+    passwordInp.type  = 'text';
+    passwordInp.value = map[username];
+    requestAnimationFrame(() => {
+      passwordInp.type = 'password';
+      passwordInp.style.borderColor = '#16a34a';
+    });
+  } else {
+    passwordInp.value = '';
+    passwordInp.style.borderColor = '';
+    passwordInp.focus();
+  }
+}
+
+function filterAdmins(query) {
+  if (!query) return allAdmins;
+  const q = query.toLowerCase();
+  return allAdmins.filter(a =>
+    a.username.toLowerCase().includes(q) || a.name.toLowerCase().includes(q)
+  );
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const usernameInput = document.getElementById('usernameInput');
+  const passwordInp   = document.getElementById('password');
+  const rememberChk   = document.getElementById('rememberMe');
+  const savedBadge    = document.getElementById('savedBadge');
+  const dropdown      = document.getElementById('usernameDropdown');
+  const arrowBtn      = document.getElementById('usernameArrow');
+
+  // Fetch all admin usernames
+  try {
+    const res = await fetch('/api/admin-usernames');
+    allAdmins = await res.json();
+  } catch(e) { allAdmins = []; }
+
+  // Pre-fill saved credentials
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  if (saved && saved.username) {
+    usernameInput.value = saved.username;
+    rememberChk.checked = true;
+    savedBadge.style.display = 'inline';
+    usernameInput.style.borderColor = '#16a34a';
+
+    if (saved.password) {
+      passwordInp.type  = 'text';
+      passwordInp.value = saved.password;
+      requestAnimationFrame(() => {
+        passwordInp.type = 'password';
+        passwordInp.style.borderColor = '#16a34a';
+      });
+    }
+  }
+
+  // Arrow — show all
+  arrowBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (dropdown.classList.contains('open')) dropdown.classList.remove('open');
+    else buildDropdown(allAdmins);
+  });
+
+  usernameInput.addEventListener('input', () => {
+    usernameInput.style.borderColor = '';
+    buildDropdown(filterAdmins(usernameInput.value));
+  });
+
+  usernameInput.addEventListener('focus', () => {
+    if (!usernameInput.value) buildDropdown(allAdmins);
+    else buildDropdown(filterAdmins(usernameInput.value));
+  });
+
+  // Keyboard nav
+  usernameInput.addEventListener('keydown', e => {
+    const items = dropdown.querySelectorAll('.ac-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+      items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+      items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && activeIdx >= 0) {
+      e.preventDefault();
+      selectAdmin(items[activeIdx].dataset.username);
+    } else if (e.key === 'Escape') {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.ac-wrap')) dropdown.classList.remove('open');
+  });
+
+  passwordInp.addEventListener('input', () => passwordInp.style.borderColor = '');
+
+  document.getElementById('adminLoginForm').addEventListener('submit', () => {
+    const username = usernameInput.value;
+    const pw       = passwordInp.value;
+    if (rememberChk.checked && username && pw) {
+      const map = JSON.parse(localStorage.getItem(STORAGE_KEY + '_map') || '{}');
+      map[username] = pw;
+      localStorage.setItem(STORAGE_KEY + '_map', JSON.stringify(map));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ username, password: pw }));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  });
+});
+</script>
+</body>
+</html>

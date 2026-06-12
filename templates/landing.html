@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>DS College of Engineering & Technology</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <style>
+    /* ── Navbar ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 12px rgba(0,0,0,.1);
+      height: 62px; display: flex; align-items: center;
+    }
+    .nav-container {
+      max-width: 1100px; width: 100%; margin: 0 auto;
+      padding: 0 24px; display: flex; align-items: center; gap: 6px;
+    }
+    .nav-brand {
+      font-size: 1rem; font-weight: 800; color: #4f46e5;
+      display: flex; align-items: center; gap: 8px;
+      margin-right: auto; text-decoration: none; white-space: nowrap;
+    }
+    .nav-brand:hover { text-decoration: none; }
+    .nav-links { display: flex; align-items: center; gap: 2px; }
+    .nav-item { position: relative; }
+    .nav-link-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 8px 14px; border-radius: 8px; font-size: .88rem;
+      font-weight: 500; color: #374151; transition: all .15s;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .nav-link-btn:hover { background: #f3f4f6; color: #4f46e5; }
+    .nav-link-btn.active { color: #4f46e5; background: #e0e7ff; }
+    .nav-chevron { font-size: .65rem; transition: transform .2s; }
+    .nav-item:hover .nav-chevron { transform: rotate(180deg); }
+    /* Dropdown */
+    .nav-dropdown {
+      position: absolute; top: calc(100% + 6px); left: 0;
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.12);
+      min-width: 200px; padding: 6px; display: none; z-index: 100;
+    }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-drop-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px; color: #374151;
+      font-size: .875rem; text-decoration: none; transition: background .12s;
+    }
+    .nav-drop-item:hover { background: #f3f4f6; color: #4f46e5; text-decoration: none; }
+    .drop-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    /* Hamburger */
+    .nav-hamburger {
+      display: none; background: none; border: none;
+      cursor: pointer; padding: 6px; font-size: 1.4rem; color: #374151;
+    }
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh; padding-top: 62px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding-left: 1rem; padding-right: 1rem;
+    }
+    .hero-content { color: #fff; max-width: 600px; }
+    .hero-logo { font-size: 4rem; margin-bottom: 16px; }
+    .hero-title { font-size: 2rem; font-weight: 800; margin-bottom: 10px; line-height: 1.2; }
+    .hero-sub { font-size: 1rem; opacity: .85; margin-bottom: 36px; }
+    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .hero-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 22px; border-radius: 12px; font-size: .95rem;
+      font-weight: 600; cursor: pointer; text-decoration: none; transition: all .15s;
+    }
+    .hero-btn-white { background: #fff; color: #4f46e5; }
+    .hero-btn-white:hover { background: #f5f3ff; text-decoration: none; transform: translateY(-2px); }
+    .hero-btn-outline { background: rgba(255,255,255,.15); color: #fff; border: 2px solid rgba(255,255,255,.5); }
+    .hero-btn-outline:hover { background: rgba(255,255,255,.25); text-decoration: none; transform: translateY(-2px); }
+    /* ── Sections ── */
+    .section { padding: 72px 24px; max-width: 1100px; margin: 0 auto; }
+    .section-heading {
+      text-align: center; margin-bottom: 48px;
+    }
+    .section-heading h2 { font-size: 1.7rem; font-weight: 800; margin-bottom: 8px; }
+    .section-heading p { color: #64748b; font-size: .95rem; }
+    .section-divider { width: 48px; height: 4px; background: #4f46e5; border-radius: 2px; margin: 12px auto 0; }
+    /* ── About ── */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+    .about-badge {
+      display: inline-block; background: #e0e7ff; color: #4f46e5;
+      font-size: .78rem; font-weight: 600; padding: 4px 12px;
+      border-radius: 20px; margin-bottom: 14px; letter-spacing: .4px;
+    }
+    .about-text h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 14px; }
+    .about-text p  { color: #475569; line-height: 1.8; margin-bottom: 12px; font-size: .93rem; }
+    .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .about-stat {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 14px 16px; text-align: center;
+    }
+    .about-stat-val { font-size: 1.5rem; font-weight: 800; color: #4f46e5; }
+    .about-stat-lbl { font-size: .75rem; color: #64748b; margin-top: 2px; }
+    .about-visual {
+      background: linear-gradient(135deg,#4f46e5,#7c3aed);
+      border-radius: 16px; padding: 36px; color: #fff; text-align: center;
+    }
+    .about-visual-icon { font-size: 4rem; margin-bottom: 12px; }
+    .about-visual h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .about-visual p { font-size: .85rem; opacity: .85; line-height: 1.7; }
+    /* ── Departments ── */
+    .dept-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 16px; }
+    .dept-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 22px 20px; text-align: center; transition: all .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    }
+    .dept-card:hover { border-color: #4f46e5; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(79,70,229,.12); }
+    .dept-icon { font-size: 2rem; margin-bottom: 10px; }
+    .dept-name { font-size: .95rem; font-weight: 700; margin-bottom: 4px; }
+    .dept-full { font-size: .78rem; color: #64748b; }
+    .dept-badge {
+      display: inline-block; margin-top: 10px; font-size: .72rem;
+      background: #e0e7ff; color: #4f46e5; padding: 2px 10px; border-radius: 20px;
+    }
+    /* ── Contact ── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .contact-info { display: flex; flex-direction: column; gap: 16px; }
+    .contact-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 16px 18px;
+    }
+    .contact-item-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: #e0e7ff; color: #4f46e5;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .contact-item-label { font-size: .75rem; color: #64748b; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
+    .contact-item-value { font-size: .9rem; font-weight: 500; margin-top: 2px; color: #1e293b; }
+    /* Map */
+    .map-wrap {
+      border-radius: 14px; overflow: hidden; border: 2px solid #e2e8f0;
+      box-shadow: 0 4px 16px rgba(0,0,0,.08); height: 320px;
+    }
+    .map-wrap iframe { width: 100%; height: 100%; border: none; }
+    /* ── Footer ── */
+    .footer {
+      background: #0f172a; color: #94a3b8;
+      text-align: center; padding: 24px;
+      font-size: .82rem;
+    }
+    .footer a { color: #818cf8; }
+    /* ── BG alternating ── */
+    .bg-white { background: #fff; }
+    .bg-gray  { background: #f8fafc; }
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: block; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 1.5rem; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══════════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="nav-container">
+    <a class="nav-brand" href="#">🎓 DS College of Engineering & Technology</a>
+
+    <div class="nav-links" id="navLinks">
+
+      <!-- Home dropdown -->
+      <div class="nav-item">
+        <button class="nav-link-btn active">
+          Home <span class="nav-chevron">▼</span>
+        </button>
+        <div class="nav-dropdown">
+          <a href="{{ url_for('student_home') }}" class="nav-drop-item">
+            <span class="drop-icon">👨‍🎓</span>
+            <div>
+              <div style="font-weight:600">Student Portal</div>
+              <div style="font-size:.75rem;color:#94a3b8">Register &amp; manage profile</div>
+            </div>
+          </a>
+          <a href="{{ url_for('admin_login') }}" class="nav-drop-item">
+            <span class="drop-icon">🛡️</span>
+            <div>
+              <div style="font-weight:600">Admin Portal</div>
+              <div style="font-size:.75rem;color:#94a3b8">Manage all students</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-link-btn" onclick="scrollToSection('about')">About Us</button>
+      </div>
+      <div class="nav-item">
+        <button class="nav-link-btn" onclick="scrollToSection('departments')">Departments</button>
+      </div>
+      <div class="nav-item">
+        <button class="nav-link-btn" onclick="scrollToSection('contact')">Contact</button>
+      </div>
+    </div>
+
+    <button class="nav-hamburger" onclick="toggleMobileMenu()" id="hamburger">☰</button>
+  </div>
+</nav>
+
+<!-- Mobile menu (hidden by default) -->
+<div id="mobileMenu" style="display:none;position:fixed;top:62px;left:0;right:0;
+     background:#fff;z-index:999;border-bottom:1px solid #e5e7eb;padding:12px 16px;
+     box-shadow:0 4px 12px rgba(0,0,0,.1)">
+  <a href="{{ url_for('student_home') }}" style="display:block;padding:10px 8px;font-size:.9rem;color:#374151;border-bottom:1px solid #f1f5f9">👨‍🎓 Student Portal</a>
+  <a href="{{ url_for('admin_login') }}"  style="display:block;padding:10px 8px;font-size:.9rem;color:#374151;border-bottom:1px solid #f1f5f9">🛡️ Admin Portal</a>
+  <button onclick="scrollToSection('about');toggleMobileMenu()"       style="display:block;width:100%;text-align:left;padding:10px 8px;font-size:.9rem;background:none;border:none;border-bottom:1px solid #f1f5f9;cursor:pointer">ℹ️ About Us</button>
+  <button onclick="scrollToSection('departments');toggleMobileMenu()" style="display:block;width:100%;text-align:left;padding:10px 8px;font-size:.9rem;background:none;border:none;border-bottom:1px solid #f1f5f9;cursor:pointer">🏫 Departments</button>
+  <button onclick="scrollToSection('contact');toggleMobileMenu()"     style="display:block;width:100%;text-align:left;padding:10px 8px;font-size:.9rem;background:none;border:none;cursor:pointer">📞 Contact</button>
+</div>
+
+<!-- ══ HERO ══════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-logo">🎓</div>
+    <h1 class="hero-title">DS College of Engineering &amp; Technology</h1>
+    <p class="hero-sub">Empowering students with knowledge, innovation and excellence since 2005.<br/>Behala, Kolkata, West Bengal</p>
+    <div class="hero-btns">
+      <a href="{{ url_for('student_home') }}" class="hero-btn hero-btn-white">
+        👨‍🎓 Student Portal
+      </a>
+      <a href="{{ url_for('admin_login') }}" class="hero-btn hero-btn-outline">
+        🛡️ Admin Portal
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT US ════════════════════════════════════════════════════ -->
+<div class="bg-white">
+<section class="section" id="about">
+  <div class="section-heading">
+    <h2>About Us</h2>
+    <p>Learn more about our institution and mission</p>
+    <div class="section-divider"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <span class="about-badge">EST. 2005</span>
+      <h3>DS College of Engineering &amp; Technology</h3>
+      <p>DS College of Engineering &amp; Technology is a premier technical institution located in Behala, Kolkata, West Bengal. We are committed to providing quality education in engineering and technology disciplines to shape the future leaders of India.</p>
+      <p>Our state-of-the-art infrastructure, experienced faculty, and industry-connected curriculum ensure that every student graduates with both theoretical knowledge and practical skills ready for the modern workplace.</p>
+      <p>We are affiliated with the West Bengal University of Technology (MAKAUT) and approved by AICTE, maintaining the highest standards of technical education.</p>
+      <div class="about-stats">
+        <div class="about-stat">
+          <div class="about-stat-val">2000+</div>
+          <div class="about-stat-lbl">Students Enrolled</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-val">120+</div>
+          <div class="about-stat-lbl">Faculty Members</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-val">18</div>
+          <div class="about-stat-lbl">Departments</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-val">95%</div>
+          <div class="about-stat-lbl">Placement Rate</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual">
+      <div class="about-visual-icon">🏛️</div>
+      <h4>Our Vision</h4>
+      <p>To be a leading technical institution that fosters innovation, research and academic excellence while building character and professional ethics in every student.</p>
+      <br/>
+      <h4>Our Mission</h4>
+      <p>To impart quality technical education through modern pedagogy, industry collaboration and holistic development, producing graduates who contribute meaningfully to society.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══ DEPARTMENTS ════════════════════════════════════════════════ -->
+<div class="bg-gray">
+<section class="section" id="departments">
+  <div class="section-heading">
+    <h2>Our Departments</h2>
+    <p>Explore the engineering disciplines we offer</p>
+    <div class="section-divider"></div>
+  </div>
+  <div class="dept-grid">
+  <div class="dept-card">
+    <div class="dept-icon">💻</div>
+    <div class="dept-name">CSE</div>
+    <div class="dept-full">Computer Science &amp; Engineering</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🤖</div>
+    <div class="dept-name">CSE-AIML</div>
+    <div class="dept-full">AI &amp; Machine Learning</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">📊</div>
+    <div class="dept-name">CSE-DS</div>
+    <div class="dept-full">Data Science</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🔒</div>
+    <div class="dept-name">CSE-CS</div>
+    <div class="dept-full">Cyber Security</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🌐</div>
+    <div class="dept-name">CSE-IoT</div>
+    <div class="dept-full">Internet of Things</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">💻</div>
+    <div class="dept-name">CSE-Robotics</div>
+    <div class="dept-full">Robotics Engineering</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">💻</div>
+    <div class="dept-name">BCA</div>
+    <div class="dept-full">Bachelor of Computer Applications</div>
+    <span class="dept-badge">4 Years · BCA</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">⚡</div>
+    <div class="dept-name">EE</div>
+    <div class="dept-full">Electrical Engineering</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🔋</div>
+    <div class="dept-name">EEE</div>
+    <div class="dept-full">Electrical &amp; Electronics Engg.</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">⚙️</div>
+    <div class="dept-name">ME</div>
+    <div class="dept-full">Mechanical Engineering</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🏗️</div>
+    <div class="dept-name">CE</div>
+    <div class="dept-full">Civil Engineering</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🔬</div>
+    <div class="dept-name">BT</div>
+    <div class="dept-full">Biotechnology Engineering</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🧪</div>
+    <div class="dept-name">CHE</div>
+    <div class="dept-full">Chemical Engineering</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🖥️</div>
+    <div class="dept-name">IT</div>
+    <div class="dept-full">Information Technology</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">✈️</div>
+    <div class="dept-name">AE</div>
+    <div class="dept-full">Aerospace Engineering</div>
+    <span class="dept-badge">4 Years · B.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🖥️</div>
+    <div class="dept-name">M.Tech</div>
+    <div class="dept-full">Master of Technology</div>
+    <span class="dept-badge">2 Years · M.Tech</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🎓</div>
+    <div class="dept-name">MCA</div>
+    <div class="dept-full">Master of Computer Applications</div>
+    <span class="dept-badge">3 Years · MCA</span>
+  </div>
+  <div class="dept-card">
+    <div class="dept-icon">🧑‍💻</div>
+    <div class="dept-name">BSc-CS</div>
+    <div class="dept-full">B.Sc. Computer Science</div>
+    <span class="dept-badge">3 Years · B.Sc.</span>
+  </div>
+</div>
+</section>
+</div>
+
+<!-- ══ CONTACT & MAP ══════════════════════════════════════════════ -->
+<div class="bg-white">
+<section class="section" id="contact">
+  <div class="section-heading">
+    <h2>Contact Us</h2>
+    <p>Get in touch or find us on the map</p>
+    <div class="section-divider"></div>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-item-icon">📍</div>
+        <div>
+          <div class="contact-item-label">Address</div>
+          <div class="contact-item-value">Behala, Kolkata, West Bengal — 700008</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📞</div>
+        <div>
+          <div class="contact-item-label">Phone</div>
+          <div class="contact-item-value">+91 33 2401 XXXX</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">✉️</div>
+        <div>
+          <div class="contact-item-label">Email</div>
+          <div class="contact-item-value">info@dscollege.ac.in</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">🕐</div>
+        <div>
+          <div class="contact-item-label">Office Hours</div>
+          <div class="contact-item-value">Mon – Sat: 9:00 AM – 5:00 PM</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">🌐</div>
+        <div>
+          <div class="contact-item-label">Affiliated To</div>
+          <div class="contact-item-value">MAKAUT, West Bengal · Approved by AICTE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Google Map — Behala, Kolkata -->
+    <div class="map-wrap">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7373.1809380851555!2d88.30757394160632!3d22.482018918225123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a027a660793c5f9%3A0x9bd96edf90d63f27!2sSakher%20Bazar%2C%20Paschim%20Barisha%2C%20Kolkata%2C%20West%20Bengal%20700008!5e0!3m2!1sen!2sin!4v1781244700729!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <p>© 2025 DS College of Engineering &amp; Technology, Behala, Kolkata, West Bengal.</p>
+  <p style="margin-top:4px">
+    <a href="{{ url_for('student_home') }}">Student Portal</a> &nbsp;·&nbsp;
+    <a href="{{ url_for('admin_login') }}">Admin Portal</a>
+  </p>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+function toggleMobileMenu() {
+  const m = document.getElementById('mobileMenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+// Highlight active nav on scroll
+window.addEventListener('scroll', () => {
+  const sections = ['hero','about','departments','contact'];
+  const btns = document.querySelectorAll('.nav-link-btn');
+  let current = 'hero';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 80) current = id;
+  });
+  btns.forEach(b => b.classList.remove('active'));
+  if (current === 'hero') btns[0]?.classList.add('active');
+  else if (current === 'about') btns[1]?.classList.add('active');
+  else if (current === 'departments') btns[2]?.classList.add('active');
+  else if (current === 'contact') btns[3]?.classList.add('active');
+});
+</script>
+</body>
+</html>
