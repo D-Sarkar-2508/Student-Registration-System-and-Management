@@ -1,20 +1,17 @@
 import os
 from dotenv import load_dotenv
-load_dotenv()
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret')
-from flask import (Flask, render_template, request, redirect,
-                   url_for, flash, session)
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from functools import wraps
 import re
 
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'student-portal-secret-2025'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///students.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
