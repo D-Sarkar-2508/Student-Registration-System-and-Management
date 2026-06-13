@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.secret_key = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret')
 from flask import (Flask, render_template, request, redirect,
                    url_for, flash, session)
 from flask_sqlalchemy import SQLAlchemy
